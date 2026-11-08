@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bone: #F1EDE4;
+  --color-bone-surface: #E8E3D8;
+  --color-ink: #141414;
+  --color-muted-ink: #6B675F;
+  --color-bone-line: #D6D0C3;
+  --color-vermilion: #FF4B1F;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: Inter, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root { color-scheme: light; }
+:root.dark { color-scheme: dark; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; background: var(--color-bone); color: var(--color-ink); font-family: var(--font-body); }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+::selection { background: var(--color-vermilion); color: var(--color-ink); }
+.dark body, :root.dark body { background: #121212; color: var(--color-bone); }
+.dark .surface, :root.dark .surface { background: #1B1B1A; }
+.dark .line, :root.dark .line { border-color: #2A2927; }
+.dark .muted, :root.dark .muted { color: #9A958B; }
+.dark .nav-surface, :root.dark .nav-surface { background: #121212; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }

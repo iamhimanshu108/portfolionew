@@ -1,0 +1,58 @@
+export const documents = [
+  {
+    id: "home",
+    fileName: "Home.jsx",
+    title: "Portfolio",
+    type: "react",
+    shortDescription: "Profile and navigation",
+  },
+  {
+    id: "about",
+    fileName: "About.md",
+    title: "Who Am I",
+    type: "markdown",
+    shortDescription: "Background and technical focus",
+  },
+  {
+    id: "projects",
+    fileName: "Projects.js",
+    title: "Projects",
+    type: "javascript",
+    shortDescription: "Selected projects",
+  },
+  {
+    id: "experience",
+    fileName: "Experience.md",
+    title: "Experience",
+    type: "markdown",
+    shortDescription: "Roles and contributions",
+  },
+  {
+    id: "skills",
+    fileName: "Skills.jsx",
+    title: "Skills",
+    type: "react",
+    shortDescription: "Tools and technologies",
+  },
+  {
+    id: "education",
+    fileName: "Education.md",
+    title: "Education",
+    type: "markdown",
+    shortDescription: "Education history",
+  },
+  {
+    id: "github",
+    fileName: "Github.md",
+    title: "GitHub",
+    type: "markdown",
+    shortDescription: "Public profile and activity",
+  },
+  {
+    id: "contact",
+    fileName: "Contact.md",
+    title: "Contact",
+    type: "mail",
+    shortDescription: "Email and social profiles",
+  },
+];
