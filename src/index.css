@@ -38,8 +38,8 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; min-width: 320px; background: var(--app-bg); color: var(--app-text); font-family: var(--font-body); }
+html { scroll-behavior: smooth; overflow-x: clip; }
+body { margin: 0; min-width: 320px; overflow-x: clip; background: var(--app-bg); color: var(--app-text); font-family: var(--font-body); }
 button, a { -webkit-tap-highlight-color: transparent; cursor: pointer; touch-action: manipulation; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--color-vermilion); outline-offset: 3px; }
 ::selection { background: var(--color-vermilion); color: var(--color-ink); }
@@ -47,5 +47,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--color-vermilion
 .line { border-color: var(--app-line); }
 .muted { color: var(--app-muted); }
 .nav-surface { background: var(--app-bg); }
+main > section#home h1 span:nth-child(2) { display: none; }
+.marquee-viewport { overflow: clip; contain: paint; }
+.overflow-hidden.border-y { contain: paint; }
 @keyframes ticker { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }
