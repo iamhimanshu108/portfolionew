@@ -10,6 +10,8 @@ import {
   useTransform,
 } from 'motion/react';
 import { createRoot } from 'react-dom/client';
+import { gsap } from 'gsap';
+import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 import { FiBox } from 'react-icons/fi';
 import { SiDocker, SiFastapi, SiGit, SiJavascript, SiLangchain, SiLinux, SiMongodb, SiMysql, SiNextdotjs, SiNodedotjs, SiPostgresql, SiPython, SiReact, SiTailwindcss, SiTypescript } from 'react-icons/si';
 import { aboutContent } from '../data/aboutData.js';
@@ -17,12 +19,19 @@ import { experience } from '../data/experienceData.js';
 import { profile } from '../data/profileData.js';
 import { projects } from '../data/projectsData.js';
 import { cn } from './lib/cn.js';
+import { FullScreenScrollFX } from './components/ui/full-screen-scroll-fx.jsx';
 import './index.css';
+
+gsap.registerPlugin(ScrambleTextPlugin);
 
 const photo = new URL('../data/My.png', import.meta.url).href;
 const easeOut = [0.22, 1, 0.36, 1];
-const roles = ['Full-Stack Developer', 'AI Engineer', 'Automation Builder'];
 const navItems = [['About', '#about'], ['Stack', '#stack'], ['Work', '#work'], ['Experience', '#experience'], ['Contact', '#contact']];
+const heroScenes = [
+  { id: 'identity', label: '01 / Himanshu Yadav', headline: [['Himanshu', false], ['Yadav.', true]], role: 'Full-Stack & AI Developer', intro: 'I build thoughtful digital products, intelligent systems, and automation that make work clearer.', tech: ['React', 'Next.js', 'Node.js', 'Python', 'AI Systems'], background: 'radial-gradient(circle at 78% 34%, color-mix(in srgb, var(--hero-accent) 18%, transparent), transparent 28%), linear-gradient(135deg, var(--hero-bg), color-mix(in srgb, var(--hero-bg) 78%, var(--hero-accent-2) 8%))' },
+  { id: 'scroll', label: '02 / Scroll', headline: [['I build', false], ['useful products.', true]], role: 'Product Engineer', intro: 'Fast interfaces and dependable product systems built around the people who use them.', tech: ['React', 'Next.js', 'TypeScript', 'Product Systems', 'UX'], background: 'radial-gradient(circle at 22% 68%, color-mix(in srgb, var(--hero-accent-2) 18%, transparent), transparent 32%), linear-gradient(135deg, color-mix(in srgb, var(--hero-bg) 88%, var(--hero-accent) 7%), var(--hero-bg))' },
+  { id: 'details', label: '03 / Details', headline: [['I make work', false], ['move smarter.', true]], role: 'AI Engineer', intro: 'Intelligent workflows that connect tools, remove repetition, and turn signals into useful action.', tech: ['Python', 'FastAPI', 'Generative AI', 'RAG', 'Automation'], background: 'radial-gradient(circle at 74% 72%, color-mix(in srgb, var(--hero-accent) 15%, transparent), transparent 30%), linear-gradient(135deg, var(--hero-bg), color-mix(in srgb, var(--hero-bg) 82%, var(--hero-accent-2) 10%))' },
+];
 const workflow = [
   ['01', 'Plan', 'Make the problem legible before choosing the tools.', 'compass'],
   ['02', 'Build', 'Turn the sharpest idea into a useful, testable system.', 'brackets'],
@@ -100,6 +109,18 @@ function PhotoBlock() {
 
 function ThemeIcon({ dark }) { return <Icon name={dark ? 'moon' : 'sun'} size={17} />; }
 
+function ScrambleText({ children, className }) {
+  const ref = useRef(null);
+  const reduceMotion = useReducedMotion();
+  useEffect(() => {
+    if (!ref.current || reduceMotion) return undefined;
+    const text = ref.current.textContent;
+    const tween = gsap.to(ref.current, { duration: 1.15, ease: 'power2.out', scrambleText: { text, chars: 'upperAndLowerCase', speed: 0.45 } });
+    return () => tween.kill();
+  }, [reduceMotion]);
+  return <span ref={ref} className={className}>{children}</span>;
+}
+
 function TechIcon({ IconComponent }) {
   return <IconComponent aria-hidden="true" />;
 }
@@ -114,12 +135,8 @@ function StackSectionContent() {
   return <div className="stack-content"><div className="stack-marquee" aria-label="Technology stack marquee"><StackMarqueeRow items={marqueeItems} /><StackMarqueeRow items={[...marqueeItems].reverse()} reverse /></div></div>;
 }
 
-function HeroHeadline() {
+function HeroHeadline({ words }) {
   const reduceMotion = useReducedMotion();
-  const words = [
-    ['I', false], ['build', false], ['full-stack', false], ['products', false],
-    ['that', false], ['think,', true], ['automate,', false], ['and', false], ['scale.', true],
-  ];
   return <h1>{words.map(([word, gradient], index) => <motion.span key={word} className={gradient ? 'gradient-text' : undefined} initial={reduceMotion ? false : { opacity: 0, y: 28 }} animate={reduceMotion ? undefined : { opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: index * 0.06, ease: easeOut }}>{word}{index < words.length - 1 ? ' ' : ''}</motion.span>)}</h1>;
 }
 
@@ -134,8 +151,7 @@ function AboutSkills() {
   return <div className="about-skill-list">{aboutSkills.map(([title, text, icon], index) => <motion.article key={title} className="about-skill-card" initial={reduceMotion ? false : { opacity: 0, y: 18 }} whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.45, delay: index * 0.1, ease: easeOut }}><span className="about-skill-icon"><Icon name={icon} size={17} /></span><div><h3>{title}</h3><p>{text}</p></div></motion.article>)}</div>;
 }
 
-function HeroTechMarquee() {
-  const items = ['React', 'Next.js', 'Node.js', 'Python', 'Generative AI', 'Automation', 'Docker'];
+function HeroTechMarquee({ items }) {
   return <div className="hero-tech page-grid"><span className="hero-tech-label">Built with</span><div className="hero-tech-window"><div className="hero-tech-track">{[...items, ...items].map((item, index) => <span key={`${item}-${index}`}>{item}</span>)}</div></div></div>;
 }
 
@@ -171,12 +187,11 @@ function Timeline() {
 
 function App() {
   const [dark, setDark] = useState(() => { const stored = localStorage.getItem('hky-theme'); return stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches; });
-  const [roleIndex, setRoleIndex] = useState(0); const [menuOpen, setMenuOpen] = useState(false); const [active, setActive] = useState('home'); const [filter, setFilter] = useState('All'); const [selectedProject, setSelectedProject] = useState(null); const [formState, setFormState] = useState({ type: 'idle', message: '' }); const [toast, setToast] = useState(''); const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); const [active, setActive] = useState('home'); const [filter, setFilter] = useState('All'); const [selectedProject, setSelectedProject] = useState(null); const [formState, setFormState] = useState({ type: 'idle', message: '' }); const [toast, setToast] = useState(''); const [scrolled, setScrolled] = useState(false);
   const { scrollY, scrollYProgress } = useScroll(); const progressScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
   useMotionValueEvent(scrollY, 'change', (latest) => { const next = latest > 32; setScrolled((current) => current === next ? current : next); });
   useEffect(() => { document.documentElement.classList.toggle('dark', dark); localStorage.setItem('hky-theme', dark ? 'dark' : 'light'); }, [dark]);
   useEffect(() => { const stored = localStorage.getItem('hky-theme'); if (stored) return undefined; const media = window.matchMedia('(prefers-color-scheme: dark)'); const change = (event) => setDark(event.matches); media.addEventListener('change', change); return () => media.removeEventListener('change', change); }, []);
-  useEffect(() => { const timer = setInterval(() => setRoleIndex((index) => (index + 1) % roles.length), 2800); return () => clearInterval(timer); }, []);
   useEffect(() => { const sections = ['home', 'about', 'stack', 'work', 'experience', 'contact'].map((id) => document.getElementById(id)).filter(Boolean); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) setActive(entry.target.id); }), { rootMargin: '-25% 0px -60% 0px' }); sections.forEach((section) => observer.observe(section)); return () => observer.disconnect(); }, []);
   const copyEmail = async () => { try { await navigator.clipboard.writeText(profile.email); setToast('Email copied'); } catch { setToast('Copy failed — use the email link'); } window.setTimeout(() => setToast(''), 2200); };
   const submitContact = (event) => { event.preventDefault(); const form = new FormData(event.currentTarget); const email = String(form.get('email') || ''); const message = String(form.get('message') || ''); if (!email || !message) { setFormState({ type: 'error', message: 'Add your email and a short message.' }); return; } try { const subject = encodeURIComponent(`Project enquiry from ${form.get('name')}`); const body = encodeURIComponent(`${message}\n\nReply to: ${email}`); window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`; setFormState({ type: 'success', message: 'Opening your email app…' }); } catch { setFormState({ type: 'error', message: 'Something went wrong. Please email me directly.' }); } };
@@ -186,12 +201,12 @@ function App() {
     <motion.div className="scroll-progress" style={{ scaleX: progressScale }} aria-hidden="true" />
     <header className={cn('site-nav-wrap', scrolled && 'is-scrolled')}><nav className={cn('site-nav', border)} aria-label="Main navigation"><a href="#home" className="brand" onClick={() => setMenuOpen(false)}>Himanshu<span>:</span></a><div className="desktop-nav">{navItems.map(([label, href]) => <a className={cn(active === href.slice(1) && 'is-active')} key={href} href={href}>{label}</a>)}</div><div className="nav-actions"><button className="theme-toggle" type="button" onClick={() => setDark((value) => !value)} aria-label={`Switch to ${dark ? 'light' : 'dark'} mode`} aria-pressed={dark}><ThemeIcon dark={dark} /></button><button className="menu-toggle" type="button" onClick={() => setMenuOpen((value) => !value)} aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen}><Icon name={menuOpen ? 'close' : 'menu'} /></button></div></nav><AnimatePresence>{menuOpen && <motion.div className="mobile-menu" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>{navItems.map(([label, href], index) => <motion.a key={href} href={href} onClick={() => setMenuOpen(false)} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}>{label}<Icon name="arrow" size={15} /></motion.a>)}</motion.div>}</AnimatePresence></header>
     <main>
-      <section id="home" className="hero-section"><HeroBackdrop /><div className="page-grid hero-inner"><div className="hero-copy"><motion.div className="status-chip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}><span className="status-dot" />Available for work</motion.div><HeroHeadline /><motion.p className="hero-role" key={roles[roleIndex]} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>{roles[roleIndex]}<span className="typing-caret" /></motion.p><p className="hero-intro">Full-Stack &amp; AI Developer crafting fast web apps and intelligent automation with React, Next.js, Node.js, and Python.</p><div className="hero-actions"><MagneticButton href="#work" className="button-primary">View My Work <Icon name="arrow" size={16} /></MagneticButton><MagneticButton href={profile.resumeUrl} target="_blank" rel="noreferrer" className="button-ghost">Download CV <Icon name="external" size={15} /></MagneticButton></div></div><PhotoBlock /></div><HeroTechMarquee /></section>
+      <section id="home" className="hero-section"><FullScreenScrollFX sections={heroScenes}>{({ section }) => <><HeroBackdrop /><div className="page-grid hero-inner"><div className="hero-copy"><AnimatePresence mode="wait" initial={false}><motion.div key={section.id} className="hero-scene-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.35, ease: easeOut }}><HeroHeadline words={section.headline} /><motion.p className="hero-role" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}><ScrambleText>{section.role}</ScrambleText><span className="typing-caret" /></motion.p><p className="hero-intro">{section.intro}</p><div className="hero-actions"><MagneticButton href="#work" className="button-primary">View My Work <Icon name="arrow" size={16} /></MagneticButton><MagneticButton href={profile.resumeUrl} target="_blank" rel="noreferrer" className="button-ghost">Download CV <Icon name="external" size={15} /></MagneticButton></div></motion.div></AnimatePresence></div><PhotoBlock /></div><HeroTechMarquee items={section.tech} /></>}</FullScreenScrollFX></section>
       <section id="about" className="section-block about-section"><div className="page-grid about-layout"><div className="about-main"><Reveal><span className="eyebrow">01 / About</span><AboutHeading /></Reveal><Reveal delay={0.12} className="about-body"><p>{aboutContent.workSummary}</p></Reveal></div><aside className="about-aside"><AboutSkills /><Reveal delay={0.2} className="quick-facts"><div className="quick-facts-heading"><span>Quick facts</span><span>///</span></div><dl><div><dt>Location</dt><dd>{profile.location}</dd></div><div><dt>Focus</dt><dd>Full-stack + AI systems</dd></div><div><dt>Stack</dt><dd>React · Next · Node · Python</dd></div><div><dt>Availability</dt><dd className="fact-available"><span className="status-dot" />Open to select work</dd></div></dl></Reveal></aside></div></section>
       <section id="stack" className="section-block section-dark stack-section"><div className="page-grid section-heading"><Reveal><span className="eyebrow">02 / Stack</span><h2>Tools that earn<br /><span className="gradient-text">their keep.</span></h2></Reveal></div><Reveal className="page-grid"><StackSectionContent /></Reveal></section>
       <section id="work" className="section-block"><div className="page-grid section-heading"><Reveal><span className="eyebrow">03 / Selected work</span><h2>Built to be<br /><span className="gradient-text">used.</span></h2></Reveal></div><div className="page-grid projects-toolbar"><div className="filter-tabs" role="tablist" aria-label="Filter projects">{['All', 'Full-Stack', 'AI', 'Automation'].map((item) => <button key={item} type="button" className={cn(filter === item && 'is-selected')} onClick={() => setFilter(item)} role="tab" aria-selected={filter === item}>{item}</button>)}</div><span className={muted}>{String(filteredProjects.length).padStart(2, '0')} projects</span></div><motion.div layout className="page-grid projects-grid"><AnimatePresence mode="popLayout">{filteredProjects.map((project, index) => <ProjectCard key={project.id} project={project} index={index} onOpen={setSelectedProject} />)}</AnimatePresence></motion.div></section>
       <section id="experience" className="section-block section-dark"><div className="page-grid section-heading"><Reveal><span className="eyebrow">04 / Experience</span><h2>A short<br /><span className="gradient-text">timeline.</span></h2></Reveal></div><div className="page-grid experience-layout"><Timeline /><Reveal className="how-work"><span className="eyebrow">How I work</span><h3>Clarity in, momentum out.</h3><div className="workflow-grid"><motion.div className="workflow-line" aria-hidden="true" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.8, ease: easeOut }} />{workflow.map(([number, title, text, icon], index) => <motion.div key={title} className="workflow-card" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }}><span className="workflow-icon"><Icon name={icon} size={17} /></span><span className="workflow-number">{number}</span><h4>{title}</h4><p>{text}</p></motion.div>)}</div></Reveal></div></section>
-      <section id="contact" className="contact-section"><div className="page-grid contact-grid"><Reveal className="contact-copy"><span className="eyebrow">05 / Contact</span><h2>Let’s build<br /><span className="gradient-text">something</span><br />together.</h2><div className="contact-details"><a href={`mailto:${profile.email}`}>{profile.email}</a><button type="button" className="copy-email" onClick={copyEmail}>Copy email</button><span>{profile.location}</span><span>Usually replies within 1–2 business days.</span></div><div className="contact-links"><a className="social-link" href={profile.xUrl} target="_blank" rel="noreferrer" aria-label="X profile" title="X"><Icon name="x" size={18} /></a><a className="social-link" href={profile.githubUrl} target="_blank" rel="noreferrer" aria-label="GitHub profile" title="GitHub"><Icon name="github" size={18} /></a><a className="social-link" href={profile.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn profile" title="LinkedIn"><Icon name="linkedin" size={18} /></a><a className="text-social-link" href={profile.resumeUrl} target="_blank" rel="noreferrer">Resume</a></div></Reveal><Reveal delay={0.08} className="contact-form-wrap"><form className="contact-form" onSubmit={submitContact}><label className="field"><input name="name" required placeholder=" " /><span>Name</span></label><label className="field"><input name="email" required type="email" placeholder=" " /><span>Email</span></label><label className="field"><textarea name="message" required rows="4" placeholder=" " /><span>Message</span></label><button className="button-base button-primary form-submit" type="submit">Send enquiry <Icon name="arrow" size={16} /></button>{formState.type !== 'idle' && <p className={cn('form-status', formState.type)} role="status">{formState.message}</p>}</form></Reveal></div></section>
+      <section id="contact" className="contact-section"><div className="page-grid contact-grid"><Reveal className="contact-copy"><span className="eyebrow">05 / Contact</span><h2>Let’s build<br /><span className="gradient-text">something</span><br />together.</h2><div className="contact-details"><a href={`mailto:${profile.email}`}>{profile.email}</a><button type="button" className="copy-email" onClick={copyEmail}>Copy email</button><span>{profile.location}</span></div><div className="contact-links"><a className="social-link" href={profile.xUrl} target="_blank" rel="noreferrer" aria-label="X profile" title="X"><Icon name="x" size={18} /></a><a className="social-link" href={profile.githubUrl} target="_blank" rel="noreferrer" aria-label="GitHub profile" title="GitHub"><Icon name="github" size={18} /></a><a className="social-link" href={profile.linkedinUrl} target="_blank" rel="noreferrer" aria-label="LinkedIn profile" title="LinkedIn"><Icon name="linkedin" size={18} /></a><a className="text-social-link" href={profile.resumeUrl} target="_blank" rel="noreferrer">Resume</a></div></Reveal><Reveal delay={0.08} className="contact-form-wrap"><form className="contact-form" onSubmit={submitContact}><label className="field"><input name="name" required placeholder=" " /><span>Name</span></label><label className="field"><input name="email" required type="email" placeholder=" " /><span>Email</span></label><label className="field"><textarea name="message" required rows="4" placeholder=" " /><span>Message</span></label><button className="button-base button-primary form-submit" type="submit">Send enquiry <Icon name="arrow" size={16} /></button>{formState.type !== 'idle' && <p className={cn('form-status', formState.type)} role="status">{formState.message}</p>}</form></Reveal></div></section>
     </main>
     <footer className={cn('site-footer page-grid', border, muted)}><span>© 2026 Himanshu Yadav</span><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top <Icon name="arrowUp" size={14} /></button></footer>
     {toast && <div className="toast" role="status" aria-live="polite">{toast}</div>}
