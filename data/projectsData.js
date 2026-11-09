@@ -8,7 +8,7 @@ export const projects = [
       "AI-powered resume evaluation that compares a candidate's resume with a job description and returns compatibility scores, missing skills, and actionable suggestions.",
     technologies: ["React", "Generative AI", "TypeScript", "Tailwind CSS"],
     repoUrl: "https://github.com/iamhimanshu108/ats-score-analyzer",
-    liveUrl: "https://www.iamhimanshu.in/",
+    liveUrl: "https://www.iamhimanshu.in/ats-score-analyzer",
     imageUrl:
       "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=1200&auto=format&fit=crop",
   },
@@ -21,7 +21,7 @@ export const projects = [
       "Trigger-based automation workflows connecting WhatsApp, Telegram, email, AppSheet, and Google Sheets with Python, FastAPI, Node.js, and Docker.",
     technologies: ["Python", "FastAPI", "Workflow Automation", "Docker"],
     repoUrl: "https://github.com/iamhimanshu108/automation-router",
-    liveUrl: "https://www.iamhimanshu.in/",
+    liveUrl: "https://www.iamhimanshu.in/automation-router",
     imageUrl:
       "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
   },
@@ -34,7 +34,7 @@ export const projects = [
       "Cryptocurrency tracking interface with live market prices, trend charts, sentiment metrics, and personal watchlists using the CoinGecko API.",
     technologies: ["React", "TypeScript", "Tailwind CSS", "CoinGecko API"],
     repoUrl: "https://github.com/iamhimanshu108/crypto-tracker",
-    liveUrl: "https://www.iamhimanshu.in/",
+    liveUrl: "https://www.iamhimanshu.in/crypto-tracker",
     imageUrl:
       "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=1200&auto=format&fit=crop",
   },
@@ -47,7 +47,7 @@ export const projects = [
       "Weather forecasts with alerts, historical climate context, and location-aware conditions using the OpenWeather API.",
     technologies: ["React", "TypeScript", "Tailwind CSS", "OpenWeather API"],
     repoUrl: "https://github.com/iamhimanshu108/weather-dashboard",
-    liveUrl: "https://www.iamhimanshu.in/",
+    liveUrl: "https://www.iamhimanshu.in/weather-dashboard",
     imageUrl:
       "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=1200&auto=format&fit=crop",
   },
