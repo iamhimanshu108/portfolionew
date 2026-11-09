@@ -1,95 +1,152 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'motion/react';
 import { createRoot } from 'react-dom/client';
 import { aboutContent } from '../data/aboutData.js';
 import { experience } from '../data/experienceData.js';
 import { homeContent } from '../data/homeData.js';
 import { profile } from '../data/profileData.js';
 import { projects } from '../data/projectsData.js';
-import { skills } from '../data/skillsData.js';
 import { cn } from './lib/cn.js';
 import './index.css';
 
 const photo = new URL('../data/My.png', import.meta.url).href;
-const easeOut = 'easeOut';
+const easeOut = [0.22, 1, 0.36, 1];
 const roles = ['Full-Stack Developer', 'AI Engineer', 'Automation Builder'];
+const navItems = [['About', '#about'], ['Work', '#work'], ['Experience', '#experience'], ['Contact', '#contact']];
+const workflow = [
+  ['01', 'Plan', 'Make the problem legible before choosing the tools.', 'compass'],
+  ['02', 'Build', 'Turn the sharpest idea into a useful, testable system.', 'brackets'],
+  ['03', 'Ship', 'Put the work in people’s hands with a clear path to value.', 'rocket'],
+  ['04', 'Iterate', 'Listen to the signal, then improve what matters most.', 'refresh'],
+];
 
-function ThemeIcon({ dark }) {
-  return dark
-    ? <svg aria-hidden="true" className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25"><path d="M13.4 10.8A5.3 5.3 0 0 1 5.2 2.6 5.4 5.4 0 1 0 13.4 10.8Z" /></svg>
-    : <svg aria-hidden="true" className="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25"><circle cx="8" cy="8" r="2.5" /><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13" /></svg>;
+function Icon({ name, size = 18 }) {
+  const paths = {
+    arrow: <path d="M4 9h11m-4-4 4 4-4 4" />,
+    moon: <path d="M14.4 10.7A5.6 5.6 0 0 1 5.3 1.6 5.8 5.8 0 1 0 14.4 10.7Z" />,
+    sun: <><circle cx="8" cy="8" r="2.5" /><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M13 3l-1.4 1.4M4.4 11.6 3 13" /></>,
+    copy: <><rect x="5" y="5" width="8" height="8" rx="1" /><path d="M3 10V3h7" /></>,
+    menu: <><path d="M2 4h12M2 8h12M2 12h12" /></>,
+    close: <><path d="m3 3 10 10M13 3 3 13" /></>,
+    arrowUp: <path d="M8 14V2m-4 4 4-4 4 4" />,
+    compass: <><circle cx="8" cy="8" r="6" /><path d="m10.5 5.5-1.4 3.6-3.6 1.4 1.4-3.6 3.6-1.4Z" /></>,
+    brackets: <><path d="M5 3 2 8l3 5M11 3l3 5-3 5M9 2 7 14" /></>,
+    rocket: <><path d="M9.5 3.1c1.8-1.2 3.5-1.2 3.5-1.2s0 1.7-1.2 3.5l-3.2 3.2-2.6-.3-.3-2.6 3.8-2.6Z" /><path d="m6.1 8.9-2.6 2.6M5.1 12.9l-1.9-.1-.1-1.9M8.6 9.4l2 2" /></>,
+    refresh: <path d="M13 5V2l-2 2a5.5 5.5 0 1 0 1.2 6.1" />,
+    external: <><path d="M9 3h4v4M13 3 7 9" /><path d="M11 8v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4" /></>,
+  };
+  return <svg aria-hidden="true" width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
 
 function Reveal({ children, className, delay = 0 }) {
-  return <motion.div className={className} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.6, delay, ease: easeOut }}>{children}</motion.div>;
+  const reduceMotion = useReducedMotion();
+  return <motion.div className={className} initial={reduceMotion ? false : { opacity: 0, y: 24 }} whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.65, delay, ease: easeOut }}>{children}</motion.div>;
 }
 
 function MagneticButton({ children, className, ...props }) {
-  const ref = useRef(null);
-  const x = useSpring(0, { stiffness: 500, damping: 35 });
-  const y = useSpring(0, { stiffness: 500, damping: 35 });
-  const bounds = useRef(null);
+  const ref = useRef(null); const x = useSpring(0, { stiffness: 500, damping: 35 }); const y = useSpring(0, { stiffness: 500, damping: 35 }); const bounds = useRef(null);
   const updateBounds = () => { bounds.current = ref.current?.getBoundingClientRect() ?? null; };
-  const move = (event) => { const box = bounds.current; if (!box) return; x.set((event.clientX - box.left - box.width / 2) * 0.15); y.set((event.clientY - box.top - box.height / 2) * 0.15); };
-  return <motion.a ref={ref} className={cn('inline-flex min-h-11 items-center gap-3 border px-4 py-3 text-sm transition-opacity duration-150 hover:opacity-75', className)} style={{ x, y }} onPointerEnter={updateBounds} onPointerMove={move} onPointerLeave={() => { x.set(0); y.set(0); }} {...props}>{children}</motion.a>;
+  const move = (event) => { const box = bounds.current; if (!box) return; x.set((event.clientX - box.left - box.width / 2) * 0.12); y.set((event.clientY - box.top - box.height / 2) * 0.12); };
+  return <motion.a ref={ref} className={cn('button-base inline-flex min-h-12 items-center justify-center gap-3 px-5 py-3 text-sm font-medium', className)} style={{ x, y }} onPointerEnter={updateBounds} onPointerMove={move} onPointerLeave={() => { x.set(0); y.set(0); }} {...props}>{children}</motion.a>;
+}
+
+function HeroBackdrop() {
+  const x = useMotionValue(0); const y = useMotionValue(0); const sx = useSpring(x, { stiffness: 90, damping: 24 }); const sy = useSpring(y, { stiffness: 90, damping: 24 }); const bounds = useRef(null);
+  const move = (event) => { const box = bounds.current; if (!box) return; x.set((event.clientX - box.left - box.width / 2) * 0.025); y.set((event.clientY - box.top - box.height / 2) * 0.025); };
+  return <div className="hero-backdrop" onPointerEnter={(event) => { bounds.current = event.currentTarget.getBoundingClientRect(); }} onPointerMove={move}><div className="hero-grid" /><motion.div className="hero-orb hero-orb-one" style={{ x: sx, y: sy }} /><motion.div className="hero-orb hero-orb-two" style={{ x: useTransform(sx, (value) => value * -1), y: useTransform(sy, (value) => value * -1) }} /></div>;
 }
 
 function Cursor() {
   const x = useMotionValue(-20); const y = useMotionValue(-20); const sx = useSpring(x, { stiffness: 500, damping: 40 }); const sy = useSpring(y, { stiffness: 500, damping: 40 }); const [active, setActive] = useState(false);
-  useEffect(() => { if (!window.matchMedia('(pointer:fine)').matches) return undefined; const move = (event) => { x.set(event.clientX - 4); y.set(event.clientY - 4); setActive(false); }; const enter = () => setActive(true); const leave = () => setActive(false); window.addEventListener('pointermove', move, { passive: true }); const links = document.querySelectorAll('a,button'); links.forEach((link) => { link.addEventListener('mouseenter', enter); link.addEventListener('mouseleave', leave); }); return () => { window.removeEventListener('pointermove', move); links.forEach((link) => { link.removeEventListener('mouseenter', enter); link.removeEventListener('mouseleave', leave); }); }; }, [x, y]);
-  return <motion.div aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-30 size-2 rounded-full bg-vermilion" style={{ x: sx, y: sy }} animate={{ scale: active ? 2 : 1 }} transition={{ duration: 0.15, ease: easeOut }} />;
+  useEffect(() => { if (!window.matchMedia('(pointer:fine)').matches) return undefined; const move = (event) => { x.set(event.clientX - 4); y.set(event.clientY - 4); }; const enter = () => setActive(true); const leave = () => setActive(false); window.addEventListener('pointermove', move, { passive: true }); const links = document.querySelectorAll('a,button'); links.forEach((link) => { link.addEventListener('mouseenter', enter); link.addEventListener('mouseleave', leave); }); return () => { window.removeEventListener('pointermove', move); links.forEach((link) => { link.removeEventListener('mouseenter', enter); link.removeEventListener('mouseleave', leave); }); }; }, [x, y]);
+  return <><motion.div aria-hidden="true" className="custom-cursor-dot" style={{ x: sx, y: sy }} /><motion.div aria-hidden="true" className="custom-cursor-ring" style={{ x: sx, y: sy }} animate={{ scale: active ? 1.8 : 1, opacity: active ? 0.65 : 0.35 }} transition={{ duration: 0.16 }} /></>;
 }
 
 function PhotoBlock() {
   const x = useSpring(0, { stiffness: 250, damping: 30 }); const y = useSpring(0, { stiffness: 250, damping: 30 }); const rotate = useSpring(0, { stiffness: 250, damping: 30 }); const [ready, setReady] = useState(false);
-  const move = (event) => { const box = event.currentTarget.getBoundingClientRect(); x.set(((event.clientX - box.left) / box.width - 0.5) * 8); y.set(((event.clientY - box.top) / box.height - 0.5) * 8); rotate.set(((event.clientX - box.left) / box.width - 0.5) * 4); };
-  return <div className="photo-float"><motion.div className="relative aspect-[4/5] w-full max-w-[22rem] bg-vermilion" style={{ x, y, rotate }} onPointerMove={move} onPointerLeave={() => { x.set(0); y.set(0); rotate.set(0); }}><img className="absolute inset-0 size-full object-cover grayscale" src={photo} alt="Portrait of Himanshu Yadav" width="1254" height="1254" loading="eager" /><motion.img className="absolute inset-0 size-full object-cover" src={photo} alt="" width="1254" height="1254" loading="eager" initial={{ opacity: 0 }} whileHover={{ opacity: 1 }} transition={{ duration: 0.2 }} /><motion.span className="absolute inset-0 z-10 bg-vermilion" initial={{ y: 0 }} animate={{ y: ready ? '-100%' : 0 }} transition={{ duration: 0.7, ease: easeOut }} onAnimationComplete={() => setReady(true)} aria-hidden="true" /></motion.div></div>;
+  const move = (event) => { const box = event.currentTarget.getBoundingClientRect(); x.set(((event.clientX - box.left) / box.width - 0.5) * 7); y.set(((event.clientY - box.top) / box.height - 0.5) * 7); rotate.set(((event.clientX - box.left) / box.width - 0.5) * 3); };
+  return <div className="photo-float"><motion.div className="photo-frame" style={{ x, y, rotate }} onPointerMove={move} onPointerLeave={() => { x.set(0); y.set(0); rotate.set(0); }}><img className="absolute inset-0 size-full object-cover grayscale" src={photo} alt="Portrait of Himanshu Yadav" width="1254" height="1254" loading="eager" /><motion.img className="absolute inset-0 size-full object-cover" src={photo} alt="" width="1254" height="1254" loading="eager" initial={{ opacity: 0 }} whileHover={{ opacity: 1 }} transition={{ duration: 0.2 }} /><motion.span className="absolute inset-0 z-10 bg-accent" initial={{ y: 0 }} animate={{ y: ready ? '-100%' : 0 }} transition={{ duration: 0.7, ease: easeOut }} onAnimationComplete={() => setReady(true)} aria-hidden="true" /><span className="photo-caption">/ 01 — Himanshu Yadav</span></motion.div></div>;
 }
 
-function ScrambleHeading({ children, className }) {
-  const [value, setValue] = useState(children); const done = useRef(false); const glyphs = '!<>-_\\/[]{}=+*?#';
-  const resolve = () => { if (done.current) return; done.current = true; let frame = 0; const tick = () => { const progress = frame / 20; setValue([...children].map((char, index) => char === ' ' ? ' ' : index < children.length * progress ? char : glyphs[Math.floor(Math.random() * glyphs.length)]).join('')); if (frame++ < 20) requestAnimationFrame(tick); else setValue(children); }; tick(); };
-  return <motion.h2 className={cn('max-w-[10ch] text-balance font-display text-5xl leading-[.95] md:text-7xl', className)} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.6, ease: easeOut }} onViewportEnter={resolve}>{value}</motion.h2>;
+function ThemeIcon({ dark }) { return <Icon name={dark ? 'moon' : 'sun'} size={17} />; }
+
+function Counter({ value, label }) {
+  const ref = useRef(null); const inView = useInView(ref, { once: true, amount: 0.7 }); const reduceMotion = useReducedMotion(); const [display, setDisplay] = useState(reduceMotion ? value : '0');
+  useEffect(() => { if (!inView) return undefined; if (reduceMotion) { setDisplay(value); return undefined; } let current = 0; const step = Math.max(1, Math.ceil(value / 24)); const timer = window.setInterval(() => { current = Math.min(value, current + step); setDisplay(current); if (current >= value) window.clearInterval(timer); }, 36); return () => window.clearInterval(timer); }, [inView, reduceMotion, value]);
+  return <div ref={ref} className="stat-block"><strong>{display}{value === 1 ? '+' : ''}</strong><span>{label}</span></div>;
 }
 
-function StackLanes() {
-  return <div className="divide-y divide-app-line border-y border-app-line">{skills.map((category, index) => <div className="grid gap-5 py-6 md:grid-cols-[3rem_15rem_1fr] md:items-start" key={category.id}><span className="font-mono text-xs text-vermilion">{String(index + 1).padStart(2, '0')}</span><h3 className="font-display text-xl text-app-text">{category.title}</h3><ul className="flex flex-wrap gap-x-5 gap-y-2 text-app-muted">{category.items.map((item) => <li className="font-mono text-sm transition-colors duration-150 hover:text-vermilion" key={item}>{item}</li>)}</ul></div>)}</div>;
+function projectCategory(project) {
+  if (project.technologies.some((technology) => /generative ai|agentic ai|\brag\b|\bllms?\b|ai integrations/i.test(technology))) return 'AI';
+  if (project.technologies.some((technology) => /automation|docker|fastapi/i.test(technology))) return 'Automation';
+  return 'Full-Stack';
+}
+
+const projectImpact = {
+  'ats-score-analyzer': 'Turns a long resume review into a clear next step.',
+  'automation-router': 'One routing layer for everyday business workflows.',
+  'crypto-tracker': 'Market context that is easier to act on at a glance.',
+  'weather-dashboard': 'Forecasts and alerts shaped around the place you are in.',
+};
+
+function ProjectCard({ project, index, onOpen }) {
+  const [spot, setSpot] = useState({ x: 50, y: 50 }); const [tilt, setTilt] = useState({ x: 0, y: 0 }); const bounds = useRef(null);
+  const move = (event) => { if (!bounds.current) bounds.current = event.currentTarget.getBoundingClientRect(); const box = bounds.current; const px = (event.clientX - box.left) / box.width; const py = (event.clientY - box.top) / box.height; setSpot({ x: px * 100, y: py * 100 }); setTilt({ x: (0.5 - py) * 5, y: (px - 0.5) * 5 }); };
+  return <motion.article className={cn('project-card group', index === 0 && 'project-card-featured')} layout initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 14 }} transition={{ duration: 0.4, ease: easeOut }} style={{ '--spot-x': `${spot.x}%`, '--spot-y': `${spot.y}%`, rotateX: tilt.x, rotateY: tilt.y }} onPointerMove={move} onPointerLeave={() => { bounds.current = null; setTilt({ x: 0, y: 0 }); }}><button className="project-open" type="button" onClick={() => onOpen(project)} aria-label={`Open case study for ${project.title}`}><div className="project-image"><img src={project.imageUrl} alt="" loading="lazy" /><div className="project-image-overlay"><span>{String(index + 1).padStart(2, '0')}</span><Icon name="arrow" /></div></div><div className="project-content"><div className="project-meta"><span>{projectCategory(project)}</span><span>{project.status}</span></div><h3>{project.title}</h3><p>{projectImpact[project.id] ?? project.description}</p><div className="tag-row">{project.technologies.slice(0, 3).map((technology) => <span key={technology}>{technology}</span>)}</div></div></button><div className="project-actions"><a href={project.liveUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>Live <Icon name="external" size={14} /></a><a href={project.repoUrl} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()}>GitHub <Icon name="external" size={14} /></a></div></motion.article>;
+}
+
+function ProjectModal({ project, onClose }) {
+  useEffect(() => { if (!project) return undefined; const closeOnEscape = (event) => { if (event.key === 'Escape') onClose(); }; document.body.style.overflow = 'hidden'; window.addEventListener('keydown', closeOnEscape); return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', closeOnEscape); }; }, [project, onClose]);
+  if (!project) return null;
+  return <motion.div className="modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.currentTarget === event.target) onClose(); }}><motion.div className="case-modal" role="dialog" aria-modal="true" aria-labelledby="case-study-title" initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 14, scale: 0.98 }}><button className="modal-close" type="button" onClick={onClose} aria-label="Close case study"><Icon name="close" /></button><img src={project.imageUrl} alt="" /><div className="modal-copy"><span className="eyebrow">Case study / {projectCategory(project)}</span><h2 id="case-study-title">{project.title}</h2><p>{project.description}</p><div className="modal-detail-grid"><div><span>Problem</span><strong>Make a complex workflow easier to understand and use.</strong></div><div><span>Solution</span><strong>A focused product surface with useful automation under the hood.</strong></div><div><span>Stack</span><strong>{project.technologies.join(' · ')}</strong></div><div><span>Result</span><strong>{projectImpact[project.id] ?? 'A practical system built for repeat use.'}</strong></div></div><div className="project-actions modal-actions"><a href={project.liveUrl} target="_blank" rel="noreferrer">Open live <Icon name="external" size={14} /></a><a href={project.repoUrl} target="_blank" rel="noreferrer">View GitHub <Icon name="external" size={14} /></a></div></div></motion.div></motion.div>;
 }
 
 function Timeline() {
-  const ref = useRef(null); const { scrollYProgress } = useScroll({ target: ref, offset: ['start 75%', 'end 35%'] }); const scaleY = useSpring(scrollYProgress, { stiffness: 200, damping: 30 });
-  return <div ref={ref} className="relative mt-10 pl-6"><div className="absolute bottom-0 left-0 top-0 w-px bg-app-line"><motion.div className="h-full origin-top bg-vermilion" style={{ scaleY }} /></div>{experience.map((item, index) => <Reveal key={item.id} delay={index * 0.07} className="relative pb-10 last:pb-0"><motion.span className="absolute -left-[1.7rem] top-1 size-2 origin-center bg-vermilion" initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true, amount: 0.7 }} transition={{ duration: 0.35, ease: easeOut }} /><span className="font-mono text-xs text-app-muted">{item.period}</span><h3 className="mt-1 font-display text-xl">{item.company} · {item.role}</h3><p className="mt-1 max-w-2xl text-pretty text-app-muted">{item.highlights[0]}</p></Reveal>)}</div>;
-}
-
-function projectType(project) {
-  if (project.technologies.some((technology) => technology.includes('AI'))) return 'AI system';
-  if (project.technologies.some((technology) => technology.includes('Automation'))) return 'Automation';
-  return 'Web product';
+  const ref = useRef(null); const { scrollYProgress } = useScroll({ target: ref, offset: ['start 72%', 'end 38%'] }); const scaleY = useSpring(scrollYProgress, { stiffness: 200, damping: 30 });
+  return <div ref={ref} className="timeline"><div className="timeline-rail"><motion.div style={{ scaleY }} /></div>{experience.map((item, index) => <Reveal key={item.id} delay={index * 0.08} className="timeline-item"><span className="timeline-dot" /><div className="timeline-header"><span>{item.period}</span><span>0{index + 1}</span></div><h3>{item.role} <em>at</em> {item.company}</h3><ul>{item.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}</ul><div className="tag-row"><span>JavaScript</span><span>Automation</span><span>Systems</span></div></Reveal>)}</div>;
 }
 
 function App() {
-  const [dark, setDark] = useState(() => localStorage.getItem('hky-theme') === 'dark'); const [roleIndex, setRoleIndex] = useState(0); const [copied, setCopied] = useState(false);
-  const { scrollYProgress } = useScroll(); const progressScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const [dark, setDark] = useState(() => { const stored = localStorage.getItem('hky-theme'); return stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches; });
+  const [roleIndex, setRoleIndex] = useState(0); const [copied, setCopied] = useState(false); const [menuOpen, setMenuOpen] = useState(false); const [active, setActive] = useState('home'); const [filter, setFilter] = useState('All'); const [selectedProject, setSelectedProject] = useState(null); const [formStatus, setFormStatus] = useState(''); const [scrolled, setScrolled] = useState(false);
+  const { scrollY, scrollYProgress } = useScroll(); const progressScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  useMotionValueEvent(scrollY, 'change', (latest) => { const next = latest > 32; setScrolled((current) => current === next ? current : next); });
   useEffect(() => { document.documentElement.classList.toggle('dark', dark); localStorage.setItem('hky-theme', dark ? 'dark' : 'light'); }, [dark]);
+  useEffect(() => { const stored = localStorage.getItem('hky-theme'); if (stored) return undefined; const media = window.matchMedia('(prefers-color-scheme: dark)'); const change = (event) => setDark(event.matches); media.addEventListener('change', change); return () => media.removeEventListener('change', change); }, []);
   useEffect(() => { const timer = setInterval(() => setRoleIndex((index) => (index + 1) % roles.length), 2800); return () => clearInterval(timer); }, []);
-  const copyEmail = async () => { try { await navigator.clipboard.writeText(profile.email); } catch { /* clipboard may be unavailable on file:// */ } setCopied(true); setTimeout(() => setCopied(false), 1400); };
+  useEffect(() => { const sections = ['home', 'about', 'work', 'experience', 'contact'].map((id) => document.getElementById(id)).filter(Boolean); const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) setActive(entry.target.id); }), { rootMargin: '-25% 0px -60% 0px' }); sections.forEach((section) => observer.observe(section)); return () => observer.disconnect(); }, []);
+  const copyEmail = async () => { try { await navigator.clipboard.writeText(profile.email); } catch { /* clipboard unavailable */ } setCopied(true); setTimeout(() => setCopied(false), 1600); };
+  const submitContact = (event) => { event.preventDefault(); const form = new FormData(event.currentTarget); const subject = encodeURIComponent(`Project enquiry from ${form.get('name')}`); const body = encodeURIComponent(`${form.get('message')}\n\nReply to: ${form.get('email')}`); window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`; setFormStatus('Opening your email app…'); };
+  const filteredProjects = filter === 'All' ? projects : projects.filter((project) => projectCategory(project) === filter);
   const border = 'border-app-line'; const muted = 'text-app-muted';
-  return <div className="min-h-dvh bg-app-bg text-app-text">
-    <motion.div className="fixed inset-x-0 top-0 z-20 h-0.5 origin-left bg-vermilion" style={{ scaleX: progressScale }} aria-hidden="true" />
-    <motion.nav className={cn('nav-surface fixed left-1/2 top-4 z-20 flex w-[calc(100%-2.5rem)] max-w-5xl -translate-x-1/2 items-center justify-between gap-6 border px-4 py-2.5 shadow-[0_8px_30px_rgba(0,0,0,.08)] md:px-5', border)} initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: easeOut }} aria-label="Main navigation"><a href="#home" className="font-display text-lg tracking-tight">HKY<span className="text-vermilion">:</span></a><div className={cn('hidden items-center gap-5 text-sm md:flex', muted)}><a className="nav-link" href="#about">About</a><a className="nav-link" href="#stack">Stack</a><a className="nav-link" href="#work">Work</a><a className="nav-link" href="#experience">Experience</a><a className="nav-link" href="#contact">Contact</a></div><button className={cn('flex size-10 shrink-0 items-center justify-center border bg-app-surface transition-colors hover:border-vermilion hover:text-vermilion', border)} onClick={() => setDark((value) => !value)} aria-label={`Switch to ${dark ? 'light' : 'dark'} mode`} aria-pressed={dark}><ThemeIcon dark={dark} /></button></motion.nav>
+  return <div className="site-shell min-h-dvh bg-app-bg text-app-text">
+    <motion.div className="scroll-progress" style={{ scaleX: progressScale }} aria-hidden="true" />
+    <header className={cn('site-nav-wrap', scrolled && 'is-scrolled')}><nav className={cn('site-nav', border)} aria-label="Main navigation"><a href="#home" className="brand" onClick={() => setMenuOpen(false)}>HKY<span>:</span></a><div className="desktop-nav">{navItems.map(([label, href]) => <a className={cn(active === href.slice(1) && 'is-active')} key={href} href={href}>{label}</a>)}</div><div className="nav-actions"><button className="theme-toggle" type="button" onClick={() => setDark((value) => !value)} aria-label={`Switch to ${dark ? 'light' : 'dark'} mode`} aria-pressed={dark}><ThemeIcon dark={dark} /></button><button className="menu-toggle" type="button" onClick={() => setMenuOpen((value) => !value)} aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={menuOpen}><Icon name={menuOpen ? 'close' : 'menu'} /></button></div></nav><AnimatePresence>{menuOpen && <motion.div className="mobile-menu" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>{navItems.map(([label, href], index) => <motion.a key={href} href={href} onClick={() => setMenuOpen(false)} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}>{label}<Icon name="arrow" size={15} /></motion.a>)}</motion.div>}</AnimatePresence></header>
     <main>
-      <section id="home" className={cn('min-h-dvh border-b pb-20 pt-32 md:pt-36', border)}><div className="mx-auto grid w-[calc(100%-2.5rem)] max-w-6xl items-center gap-14 md:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)] md:gap-16"><div><h1 className="text-balance font-display text-7xl leading-[.85] tracking-[-.055em] md:text-[9rem]"><motion.span className="block overflow-hidden" initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: .65, ease: easeOut }}>Himanshu</motion.span><motion.span className="block overflow-hidden text-vermilion" initial={{ y: '110%', opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: .65, delay: .08, ease: easeOut }}>Yadav</motion.span></h1><motion.p className="mt-7 font-mono text-sm text-vermilion" key={roles[roleIndex]} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .2, ease: easeOut }}>{roles[roleIndex]}<span className="ml-1 inline-block h-4 w-px translate-y-1 bg-vermilion" /></motion.p><p className={cn('mt-3 max-w-xl text-pretty text-lg', muted)}>{homeContent.intro}</p><div className="mt-8 flex flex-wrap gap-3"><MagneticButton href="#work" className="border-vermilion bg-vermilion">View work</MagneticButton><MagneticButton href="#contact">Let's talk</MagneticButton></div></div><PhotoBlock /></div></section>
-      <section id="about" className={cn('border-b py-24', border)}><div className="mx-auto w-[calc(100%-2.5rem)] max-w-6xl"><p className="font-mono text-xs text-vermilion">About</p><ScrambleHeading>I build the useful kind of complex.</ScrambleHeading><div className="mt-12 grid gap-12 md:grid-cols-[1.2fr_.8fr]"><Reveal><p className={cn('max-w-2xl text-pretty text-2xl leading-tight', muted)}>{aboutContent.workSummary}</p></Reveal><Reveal delay={.07} className="grid grid-cols-3 gap-4 self-end"><div className={cn('border-t pt-3', border)}><strong className="font-display text-4xl text-vermilion">1+</strong><span className={cn('mt-1 block font-mono text-xs', muted)}>years building</span></div><div className={cn('border-t pt-3', border)}><strong className="font-display text-4xl text-vermilion">{projects.length}</strong><span className={cn('mt-1 block font-mono text-xs', muted)}>shipped projects</span></div><div className={cn('border-t pt-3', border)}><strong className="font-display text-4xl text-vermilion">n8n</strong><span className={cn('mt-1 block font-mono text-xs', muted)}>workflow engine</span></div></Reveal></div></div></section>
-      <section id="stack" className={cn('border-b py-24', border)}><div className="mx-auto w-[calc(100%-2.5rem)] max-w-6xl"><p className="font-mono text-xs text-vermilion">Stack</p><ScrambleHeading>Tools that earn their keep.</ScrambleHeading><div className="mt-12"><StackLanes /></div></div></section>
-      <section id="work" className={cn('border-b py-24', border)}><div className="mx-auto w-[calc(100%-2.5rem)] max-w-6xl"><p className="font-mono text-xs text-vermilion">Selected work</p><ScrambleHeading>Built to be used.</ScrambleHeading><div className={cn('mt-12 border-t', border)}>{projects.map((project, index) => <Reveal key={project.id} delay={index * .07} className={cn('group relative grid gap-4 overflow-hidden border-b py-5 md:grid-cols-[3rem_minmax(0,1fr)_8rem_auto] md:items-center', border)}><span className="relative z-10 font-mono text-xs text-vermilion group-hover:text-ink">{String(index + 1).padStart(2, '0')}</span><div className="relative z-10"><h3 className="font-display text-2xl transition-transform duration-150 group-hover:translate-x-2">{project.title}</h3><p className={cn('mt-1 line-clamp-2 max-w-3xl text-pretty group-hover:text-ink', muted)}>{project.description}</p><div className="mt-3 flex flex-wrap gap-2"><span className={cn('border px-2 py-1 font-mono text-[10px] group-hover:border-ink group-hover:text-ink', border, muted)}>{projectType(project)}</span>{project.technologies.slice(0, 2).map((technology) => <span key={technology} className={cn('border px-2 py-1 font-mono text-[10px] group-hover:border-ink group-hover:text-ink', border, muted)}>{technology}</span>)}</div></div><div className="relative z-10 font-mono text-xs text-app-muted"><span className="block text-app-text">{project.status}</span><span className="block mt-1">{project.fileName}</span></div><a className="relative z-10 inline-flex min-h-11 items-center font-mono text-xs text-vermilion underline-offset-4 hover:underline group-hover:text-ink" href={project.repoUrl} target="_blank" rel="noreferrer">View repo</a><span className="absolute inset-0 origin-left scale-x-0 bg-vermilion transition-transform duration-150 group-hover:scale-x-100" aria-hidden="true" /></Reveal>)}</div></div></section>
-      <section id="experience" className={cn('border-b py-24', border)}><div className="mx-auto w-[calc(100%-2.5rem)] max-w-6xl"><p className="font-mono text-xs text-vermilion">Experience</p><ScrambleHeading>A short timeline.</ScrambleHeading><Timeline /></div></section>
-      <section id="contact" className="py-24"><div className="mx-auto w-[calc(100%-2.5rem)] max-w-6xl"><p className="font-mono text-xs text-vermilion">Contact</p><h2 className="mt-4 max-w-4xl text-balance font-display text-7xl leading-[.85] md:text-[10rem]">Let's build something<span className="text-vermilion">.</span></h2><div className={cn('mt-12 flex flex-wrap gap-6', muted)}><a href={`mailto:${profile.email}`}>{profile.email}</a><button className="min-h-11 font-mono text-xs text-vermilion underline-offset-4 hover:underline" onClick={copyEmail}>Copy email</button><a className="underline-offset-4 hover:underline" href={profile.githubUrl} target="_blank" rel="noreferrer">GitHub</a><a className="underline-offset-4 hover:underline" href={profile.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn</a></div></div></section>
+      <section id="home" className="hero-section"><HeroBackdrop /><div className="page-grid hero-inner"><div className="hero-copy"><motion.div className="status-chip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}><span className="status-dot" />Available for work</motion.div><h1><motion.span initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, ease: easeOut }}>I build</motion.span>{' '}<motion.span className="gradient-text" initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.08, ease: easeOut }}>full-stack apps,</motion.span>{' '}<motion.span initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.16, ease: easeOut }}>AI systems</motion.span>{' '}<motion.span initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.24, ease: easeOut }}>& automation workflows.</motion.span></h1><motion.p className="hero-role" key={roles[roleIndex]} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>{roles[roleIndex]}<span className="typing-caret" /></motion.p><p className={cn('hero-intro', muted)}>{homeContent.intro}</p><div className="hero-actions"><MagneticButton href="#work" className="button-primary">View work <Icon name="arrow" size={16} /></MagneticButton><MagneticButton href={profile.resumeUrl} target="_blank" rel="noreferrer" className="button-ghost">Download resume <Icon name="external" size={15} /></MagneticButton></div><div className="hero-footnote"><span>Based in {profile.location}</span><span className="hero-rule" /><span>Building useful complexity</span></div></div><PhotoBlock /></div></section>
+      <section id="about" className="section-block"><div className="page-grid section-heading"><Reveal><span className="eyebrow">01 / About</span><h2>Useful complexity,<br /><span className="gradient-text">made clear.</span></h2></Reveal><Reveal delay={0.08} className="section-heading-copy"><p>{aboutContent.workSummary}</p><a href="#contact" className="text-link">Start a conversation <Icon name="arrow" size={15} /></a></Reveal></div><div className="page-grid stats-grid"><Counter value={projects.length} label="projects shipped" /><Counter value={15} label="technologies in use" /><Counter value={1} label="year building" /><Counter value={5} label="focus areas" /></div></section>
+      <section id="work" className="section-block"><div className="page-grid section-heading"><Reveal><span className="eyebrow">02 / Selected work</span><h2>Built to be<br /><span className="gradient-text">used.</span></h2></Reveal><Reveal delay={0.08} className="section-heading-copy"><p>Selected systems across product, AI, automation, and the space where they overlap.</p></Reveal></div><div className="page-grid projects-toolbar"><div className="filter-tabs" role="tablist" aria-label="Filter projects">{['All', 'Full-Stack', 'AI', 'Automation'].map((item) => <button key={item} type="button" className={cn(filter === item && 'is-selected')} onClick={() => setFilter(item)} role="tab" aria-selected={filter === item}>{item}</button>)}</div><span className={muted}>{String(filteredProjects.length).padStart(2, '0')} projects</span></div><motion.div layout className="page-grid projects-grid"><AnimatePresence mode="popLayout">{filteredProjects.map((project, index) => <ProjectCard key={project.id} project={project} index={index} onOpen={setSelectedProject} />)}</AnimatePresence></motion.div></section>
+      <section id="experience" className="section-block section-dark"><div className="page-grid section-heading"><Reveal><span className="eyebrow">03 / Experience</span><h2>A short<br /><span className="gradient-text">timeline.</span></h2></Reveal><Reveal delay={0.08} className="section-heading-copy"><p>Small teams, real constraints, and a bias toward shipping the useful version first.</p></Reveal></div><div className="page-grid experience-layout"><Timeline /><Reveal className="how-work"><span className="eyebrow">How I work</span><h3>Clarity in, momentum out.</h3><div className="workflow-grid">{workflow.map(([number, title, text, icon], index) => <motion.div key={title} className="workflow-card" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.08 }}><span className="workflow-icon"><Icon name={icon} size={17} /></span><span className="workflow-number">{number}</span><h4>{title}</h4><p>{text}</p></motion.div>)}</div></Reveal></div></section>
+      <section id="contact" className="contact-section"><div className="page-grid contact-grid"><Reveal className="contact-copy"><span className="eyebrow">04 / Contact</span><h2>Let’s build<br /><span className="gradient-text">something</span><br />together.</h2><p className={muted}>Have a product idea, an automation problem, or a system that needs a sharper edge?</p><div className="contact-links"><a href={`mailto:${profile.email}`}>{profile.email}</a><button type="button" onClick={copyEmail}><Icon name="copy" size={14} />{copied ? 'Copied' : 'Copy email'}</button><a href={profile.githubUrl} target="_blank" rel="noreferrer">GitHub</a><a href={profile.linkedinUrl} target="_blank" rel="noreferrer">LinkedIn</a></div></Reveal><Reveal delay={0.08} className="contact-form-wrap"><form className="contact-form" onSubmit={submitContact}><label>Name<input name="name" required placeholder="Your name" /></label><label>Email<input name="email" required type="email" placeholder="you@example.com" /></label><label>Message<textarea name="message" required rows="4" placeholder="Tell me what you’re building…" /></label><button className="button-base button-primary form-submit" type="submit">Send enquiry <Icon name="arrow" size={16} /></button>{formStatus && <p className="form-status" role="status">{formStatus}</p>}</form></Reveal></div></section>
     </main>
-    <footer className={cn('mx-auto flex w-[calc(100%-2.5rem)] max-w-6xl justify-between border-t py-8 font-mono text-xs', border, muted)}><span>© 2026 Himanshu Yadav</span><span>Guwahati, India</span></footer>
-    {copied && <div className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2 bg-app-text px-3 py-2 font-mono text-xs text-app-bg" role="status" aria-live="polite">Copied!</div>}
+    <footer className={cn('site-footer page-grid', border, muted)}><span>© 2026 Himanshu Yadav</span><span>Guwahati, India</span><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Back to top <Icon name="arrowUp" size={14} /></button></footer>
+    {copied && <div className="toast" role="status" aria-live="polite">Email copied to clipboard</div>}
+    <AnimatePresence>{selectedProject && <ProjectModal project={selectedProject} onClose={() => setSelectedProject(null)} />}</AnimatePresence>
     <Cursor />
   </div>;
 }
 
-export default App;
-createRoot(document.getElementById('root')).render(<App />);
+const rootElement = document.getElementById('root');
+const root = rootElement._hkyRoot ?? createRoot(rootElement);
+rootElement._hkyRoot = root;
+root.render(<App />);
