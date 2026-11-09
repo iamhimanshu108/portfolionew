@@ -111,7 +111,7 @@ function StackMarqueeRow({ items, reverse = false }) {
 
 function StackSectionContent() {
   const marqueeItems = techGroups.flatMap((group) => group.items);
-  return <div className="stack-content"><div className="stack-category-grid">{techGroups.map((group, index) => <motion.article className={cn('stack-category-card', index === techGroups.length - 1 && 'stack-category-wide')} key={group.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.35 }} transition={{ duration: 0.4, delay: index * 0.08, ease: easeOut }}><div className="stack-category-head"><span>{group.title}</span><span>{String(group.items.length).padStart(2, '0')}</span></div><div className="stack-category-items">{group.items.map(([name, IconComponent]) => <span className="stack-tool" key={name}><TechIcon IconComponent={IconComponent} />{name}</span>)}</div></motion.article>)}</div><div className="stack-marquee" aria-label="Technology stack marquee"><StackMarqueeRow items={marqueeItems} /><StackMarqueeRow items={[...marqueeItems].reverse()} reverse /></div></div>;
+  return <div className="stack-content"><div className="stack-marquee" aria-label="Technology stack marquee"><StackMarqueeRow items={marqueeItems} /><StackMarqueeRow items={[...marqueeItems].reverse()} reverse /></div></div>;
 }
 
 function HeroHeadline() {
