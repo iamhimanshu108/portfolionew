@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#F1EDE4"/>
+  <path d="M0 530h1200" stroke="#DDD6C6"/>
+  <circle cx="1030" cy="120" r="190" fill="#FF5B2E" opacity=".12"/>
+  <text x="80" y="160" fill="#FF5B2E" font-family="monospace" font-size="24">HIMANSHU YADAV / 2026</text>
+  <text x="80" y="300" fill="#17150F" font-family="Arial, sans-serif" font-size="76" font-weight="700">Full-Stack &amp;</text>
+  <text x="80" y="385" fill="#17150F" font-family="Arial, sans-serif" font-size="76" font-weight="700">AI Developer</text>
+  <text x="80" y="485" fill="#6B665A" font-family="Arial, sans-serif" font-size="28">Useful products, intelligent systems, and automation.</text>
+</svg>

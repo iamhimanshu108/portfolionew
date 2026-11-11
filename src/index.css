@@ -54,6 +54,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; overflow-x: clip; }
 body { margin: 0; min-width: 320px; overflow-x: clip; background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; }
+img { display: block; max-width: 100%; }
 button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
 button, a { cursor: pointer; touch-action: manipulation; }
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -77,7 +78,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .desktop-nav a:hover, .desktop-nav a.is-active { color: var(--text); }
 .desktop-nav a.is-active::after, .desktop-nav a:hover::after { transform: scaleX(1); transform-origin: left; }
 .nav-actions { display: flex; align-items: center; gap: 8px; }
-.theme-toggle, .menu-toggle, .modal-close { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: border-color 160ms ease, color 160ms ease, transform 160ms ease; }
+.theme-toggle, .menu-toggle, .modal-close { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--border); background: var(--surface); color: var(--text); transition: border-color 160ms ease, color 160ms ease, transform 160ms ease; }
 .theme-toggle:hover, .menu-toggle:hover, .modal-close:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
 .menu-toggle { display: none; }
 .mobile-menu { width: min(1200px, calc(100% - 48px)); margin: 8px auto 0; padding: 8px; border: 1px solid var(--border); border-radius: 16px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: var(--shadow-soft); backdrop-filter: blur(18px); }
@@ -239,6 +240,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .workflow-card p { margin: 8px 0 0; color: var(--panel-muted); font-size: 12px; line-height: 1.45; }
 
 .contact-section { padding-bottom: 112px; }
+.contact-section:not(.contact-section-polished) { display: none; }
 .contact-grid { align-items: start; }
 .contact-copy { grid-column: 1 / span 6; }
 .contact-copy h2 { font-size: clamp(2.8rem, 5vw, 5.8rem); }
@@ -250,6 +252,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .contact-links { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 36px; }
 .contact-links a { display: inline-flex; align-items: center; gap: 7px; padding: 0; color: var(--text); font-family: var(--font-mono); font-size: 11px; text-decoration: none; }
 .contact-links a:hover { color: var(--accent); }
+.contact-card { position: relative; display: grid !important; grid-template-columns: 28px 1fr auto; min-width: 150px; min-height: 52px; align-items: center; gap: 10px; padding: 10px 12px !important; border: 1px solid var(--border); color: var(--text) !important; text-decoration: none !important; transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+.contact-card:hover, .contact-card:focus-visible { border-color: var(--accent); box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 10%, transparent); transform: translateY(-2px); }
+.contact-card-icon { display: grid; width: 28px; height: 28px; place-items: center; border: 1px solid var(--accent); color: var(--accent); font-family: var(--font-mono); font-size: 9px; }
+.contact-card-arrow { color: var(--accent); transition: transform 180ms ease; }
+.contact-card:hover .contact-card-arrow, .contact-card:focus-visible .contact-card-arrow { transform: translate(2px, -2px); }
 .contact-divider { width: 1px; min-height: 16px; align-self: center; background: var(--border); }
 .social-link { justify-content: center; width: 30px; height: 30px; border: 1px solid transparent; }
 .social-link:hover { border-color: var(--accent); }
@@ -262,6 +269,25 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .field span { position: absolute; top: 13px; left: 0; color: var(--muted); font-family: var(--font-mono); font-size: 10px; pointer-events: none; text-transform: uppercase; transition: color 160ms ease, transform 160ms ease; }
 .contact-form input, .contact-form textarea { width: 100%; resize: vertical; padding: 12px 0; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; outline: 0; background: transparent; color: var(--text); font: 15px var(--font-body); }
 .contact-form input:focus, .contact-form textarea:focus { border-color: var(--accent); box-shadow: 0 1px 0 var(--accent); }
+.contact-section-polished .contact-intro { max-width: 38rem; margin: 28px 0 0; color: var(--muted); font-size: 16px; line-height: 1.7; }
+.availability-note { display: inline-flex; align-items: center; gap: 10px; margin: 24px 0 0; color: var(--text); font-size: 13px; }
+.contact-section-polished .contact-form { gap: 22px; }
+.contact-section-polished .contact-form input, .contact-section-polished .contact-form textarea { min-height: 52px; padding: 16px 0 10px; border-bottom-color: var(--border); transition: none; }
+.contact-section-polished .contact-form textarea { min-height: 138px; }
+.contact-section-polished .contact-form input:focus, .contact-section-polished .contact-form textarea:focus { border-bottom-color: var(--accent); box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 24%, transparent); }
+.field span em { color: var(--muted); font-family: var(--font-body); font-size: 10px; font-style: normal; text-transform: none; }
+.field-error, .character-count { display: block; margin-top: 7px; font-size: 11px; line-height: 1.4; }
+.field-error { color: var(--accent); }
+.character-count { color: var(--muted); text-align: right; }
+.contact-form input[aria-invalid="true"], .contact-form textarea[aria-invalid="true"] { border-bottom-color: var(--accent); }
+.contact-section-polished .form-submit { display: inline-flex; min-height: 52px; align-items: center; justify-content: center; gap: 9px; }
+.contact-section-polished .form-submit:disabled { cursor: not-allowed; opacity: .48; }
+.retry-link { padding: 0; border: 0; background: none; color: var(--text); font: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.button-spinner { animation: spin 700ms linear infinite; }
+.contact-success { display: grid; min-height: 360px; place-items: center; align-content: center; gap: 12px; padding: 32px; border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 72%, transparent); text-align: center; }
+.contact-success strong { font-family: var(--font-display); font-size: 20px; }
+.contact-success > span:last-child { color: var(--muted); font-size: 14px; }
+.success-check { display: grid; width: 56px; height: 56px; place-items: center; border: 1px solid var(--accent); border-radius: 50%; color: var(--accent); font-size: 26px; }
 .field input:focus + span, .field textarea:focus + span, .field input:not(:placeholder-shown) + span, .field textarea:not(:placeholder-shown) + span { color: var(--accent); transform: translateY(-16px) scale(.9); transform-origin: left; }
 .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--muted); opacity: .75; }
 .form-submit { width: 100%; margin-top: 8px; border: 0; }
@@ -288,6 +314,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .custom-cursor-dot, .custom-cursor-ring { position: fixed; z-index: 80; top: 0; left: 0; pointer-events: none; border-radius: 999px; transform: translate(-50%, -50%); }
 .custom-cursor-dot { width: 8px; height: 8px; background: var(--accent); }
 .custom-cursor-ring { width: 26px; height: 26px; border: 1px solid var(--accent); }
+.skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; padding: 10px 14px; transform: translateY(-150%); background: var(--text); color: var(--bg); font-weight: 600; text-decoration: none; }
+.skip-link:focus { transform: translateY(0); }
+.app-loader { display: grid; min-height: 100dvh; place-items: center; background: var(--bg); color: var(--accent); }
+.loader-mark { font-family: var(--font-display); font-size: 2rem; font-weight: 700; animation: loader-pulse 700ms ease-in-out infinite alternate; }
+.honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.form-status.loading { color: var(--muted); }
+.form-submit:disabled { cursor: wait; opacity: .65; }
+.site-footer button, .copy-email, .project-actions a, .social-link { min-height: 44px; }
 
 @keyframes portrait-float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -8px, 0); } }
 @keyframes status-pulse { 0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 14%, transparent); } 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--success) 0%, transparent); } }
@@ -295,6 +329,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @keyframes hero-tech-move { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes stack-marquee-forward { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes stack-marquee-reverse { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@keyframes loader-pulse { from { opacity: .45; transform: translateY(2px); } to { opacity: 1; transform: translateY(-2px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 900px) {
   .desktop-nav { display: none; }
@@ -345,6 +381,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .how-work { margin-top: 64px; }
   .contact-grid { display: block; }
   .contact-form-wrap { margin-top: 54px; }
+  .contact-section-polished .contact-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .contact-card { min-width: 0; }
   .site-footer { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; padding-block: 28px; }
   .site-footer span:nth-child(2) { order: 3; width: 100%; }
   .modal-backdrop { padding: 12px; }
