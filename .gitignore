@@ -150,6 +150,3 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
-
-# Pre-render build step
-dist-ssr
