@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { FiArrowUpRight, FiFileText } from 'react-icons/fi';
 import { profile } from '../../data/profileData.js';
 import { trackEvent } from '../lib/track.js';
 
-const photo = new URL('../../data/My.png', import.meta.url).href;
+import avatar from '../../data/photo-96.webp';
 
 const answers = [
   {
@@ -35,9 +35,11 @@ const answers = [
   },
 ];
 
+// The full answer is rendered on the server (good for crawlers and no-JS),
+// then streamed in on the client before the first paint.
 function useStream(text, enabled) {
-  const [count, setCount] = useState(enabled ? 0 : text.length);
-  useEffect(() => {
+  const [count, setCount] = useState(text.length);
+  useLayoutEffect(() => {
     if (!enabled) { setCount(text.length); return undefined; }
     setCount(0);
     let index = 0;
@@ -54,8 +56,9 @@ function useStream(text, enabled) {
 
 function AskPanel() {
   const [active, setActive] = useState(answers[0]);
-  const reduceMotion = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches).current;
-  const { shown, done } = useStream(active.text, !reduceMotion);
+  const [animate, setAnimate] = useState(false);
+  useLayoutEffect(() => { setAnimate(!window.matchMedia('(prefers-reduced-motion: reduce)').matches); }, []);
+  const { shown, done } = useStream(active.text, animate);
 
   const choose = (answer) => {
     setActive(answer);
@@ -68,7 +71,7 @@ function AskPanel() {
       {answers.map((answer) => <button key={answer.id} type="button" role="radio" aria-checked={active.id === answer.id} className="ask-option" onClick={() => choose(answer)}>{answer.label}</button>)}
     </div>
     <div className="ask-reply" aria-live="polite" aria-busy={!done}>
-      <img className="ask-avatar" src={photo} alt="" width="36" height="36" />
+      <img className="ask-avatar" src={avatar} alt="" width="36" height="36" />
       <div>
         <p className="ask-text">{shown}{!done && <span className="ask-caret" aria-hidden="true" />}</p>
         <div className={`ask-links${done ? ' is-ready' : ''}`}>
@@ -86,8 +89,10 @@ export function Hero() {
   return <section id="top" className="hero">
     <div className="container hero-grid">
       <div className="hero-copy">
-        <p className="hero-name"><span className="status-dot" aria-hidden="true" />Himanshu Yadav, full-stack &amp; AI developer in {profile.location.split(',')[0]}</p>
-        <h1>I build web products and the AI that runs inside them.</h1>
+        <h1>
+          <span className="hero-name"><span className="status-dot" aria-hidden="true" />Himanshu Yadav, full-stack &amp; AI developer in {profile.location.split(',')[0]}.</span>{' '}
+          <span className="hero-title">I build web products and the AI that runs inside them.</span>
+        </h1>
         <p className="hero-lede">React and Next.js on the front, Node.js and Python behind it, and LLM workflows wherever they save someone real time.</p>
         <div className="hero-actions">
           <a className="btn btn-primary" href="#work">See my work</a>

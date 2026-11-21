@@ -3,7 +3,7 @@ import { SiDocker, SiFastapi, SiGit, SiJavascript, SiLinux, SiMongodb, SiMysql, 
 import { aboutContent } from '../../data/aboutData.js';
 import { profile } from '../../data/profileData.js';
 
-const photo = new URL('../../data/My.png', import.meta.url).href;
+import photo from '../../data/photo-320.webp';
 
 const stack = [
   { group: 'Frontend', items: [['React', SiReact], ['Next.js', SiNextdotjs], ['TypeScript', SiTypescript], ['JavaScript', SiJavascript], ['Tailwind CSS', SiTailwindcss]] },
@@ -17,7 +17,7 @@ export function About() {
   return <section id="about" className="section section-alt">
     <div className="container about-grid">
       <div className="about-intro">
-        <img className="about-photo" src={photo} alt="Himanshu Yadav" width="1254" height="1254" loading="lazy" />
+        <img className="about-photo" src={photo} alt="Portrait of Himanshu Yadav" width="132" height="132" loading="lazy" decoding="async" />
         <div>
           <h2>About me</h2>
           <p className="about-lede">{aboutContent.workSummary}</p>

@@ -98,7 +98,8 @@ kbd { font-family: var(--font-mono); font-size: .75rem; }
 .nav { position: sticky; top: 0; z-index: 40; border-bottom: 1px solid transparent; transition: background-color .2s ease, border-color .2s ease; }
 .nav.is-scrolled, .nav.is-open { background: color-mix(in srgb, var(--bg) 82%, transparent); border-bottom-color: var(--line); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); }
 .nav-inner { display: flex; align-items: center; gap: 2rem; min-height: 68px; }
-.brand { display: inline-flex; align-items: center; gap: .65rem; font-weight: 700; letter-spacing: -.02em; }
+.brand { display: inline-flex; align-items: center; gap: .65rem; min-width: 0; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
+.brand-mark { flex: none; }
 .brand-mark { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--gold); color: var(--on-gold); font-size: .9rem; font-weight: 800; letter-spacing: -.04em; }
 .nav-links { display: flex; gap: .25rem; margin-left: auto; }
 .nav-links a { position: relative; padding: .5rem .8rem; border-radius: 8px; color: var(--muted); font-size: .95rem; font-weight: 500; transition: color .15s ease; }
@@ -114,9 +115,10 @@ kbd { font-family: var(--font-mono); font-size: .75rem; }
 /* ───────── Hero ───────── */
 .hero { padding: clamp(2.5rem, 1.5rem + 5vw, 6rem) 0 clamp(3rem, 2rem + 4vw, 5.5rem); }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(2.5rem, 5vw, 5rem); align-items: center; }
-.hero-name { display: inline-flex; align-items: center; gap: .6rem; color: var(--muted); font-size: 1rem; font-weight: 500; }
+.hero h1 { margin: 0; font-weight: inherit; }
+.hero-name { display: flex; align-items: center; gap: .6rem; color: var(--muted); font-size: 1rem; font-weight: 500; line-height: 1.5; letter-spacing: 0; }
 .status-dot { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 22%, transparent); }
-.hero h1 { max-width: 15ch; margin-top: 1.25rem; font-size: var(--step-4); font-weight: 750; line-height: 1.02; letter-spacing: -.038em; text-wrap: balance; }
+.hero-title { display: block; max-width: 15ch; margin-top: 1.25rem; font-size: var(--step-4); font-weight: 750; line-height: 1.02; letter-spacing: -.038em; text-wrap: balance; }
 .hero-lede { max-width: 46ch; margin-top: 1.5rem; color: var(--muted); font-size: var(--step-1); line-height: 1.55; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2.25rem; }
 
@@ -242,6 +244,7 @@ kbd { font-family: var(--font-mono); font-size: .75rem; }
 .footer { border-top: 1px solid var(--line); }
 .footer-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .75rem 2rem; padding: 2rem 0; color: var(--muted); font-size: .9rem; }
 .footer kbd { padding: .05rem .35rem; border: 1px solid var(--line-strong); border-radius: 5px; }
+.footer a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -10px; }
 .footer a:hover { color: var(--text); }
 
 /* Command palette */
@@ -276,7 +279,7 @@ kbd { font-family: var(--font-mono); font-size: .75rem; }
 /* ───────── Responsive ───────── */
 @media (max-width: 960px) {
   .hero-grid, .about-grid, .exp-grid, .contact-grid { grid-template-columns: 1fr; }
-  .hero h1 { max-width: 18ch; }
+  .hero-title { max-width: 18ch; }
   .project { grid-template-columns: 1fr; }
   .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
   .flow-step + .flow-step { margin-top: 0; }
@@ -312,6 +315,26 @@ kbd { font-family: var(--font-mono); font-size: .75rem; }
   .ask { padding: 1.25rem; }
   .ask-reply { min-height: 18rem; }
   .footer-inner { flex-direction: column; }
+}
+
+@media (max-width: 380px) {
+  .container { width: min(var(--container), 100% - 32px); }
+  .nav-links { padding-inline: 16px; }
+  .brand-name { font-size: .92rem; }
+  .hero-actions .btn { flex: 1 1 100%; }
+  .ask-option { padding: 0 .85rem; }
+}
+
+/* Short landscape phones: keep the hero compact */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero { padding-top: 2rem; }
+  .palette-backdrop { padding-top: 4vh; }
+}
+
+/* Very large screens: a little more room */
+@media (min-width: 1800px) {
+  :root { --container: 1280px; }
+  body { font-size: 1.125rem; }
 }
 
 @media (hover: none) {

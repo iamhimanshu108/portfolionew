@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useIsMac } from '../lib/useIsMac.js';
 import { FiMenu, FiMoon, FiSun, FiX } from 'react-icons/fi';
 
 const items = [['Work', 'work'], ['About', 'about'], ['Experience', 'experience'], ['Contact', 'contact']];
-const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 
 export function Nav({ theme, onToggleTheme, onOpenPalette }) {
+  const isMac = useIsMac();
   const [active, setActive] = useState('');
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
 const storageKey = 'hky-theme';
 
@@ -7,7 +7,12 @@ function readStored() {
 }
 
 export function useTheme() {
-  const [theme, setTheme] = useState(() => readStored() ?? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+  // Start as 'dark' so the server render and first client render match,
+  // then pick up what the inline script in index.html already applied.
+  const [theme, setTheme] = useState('dark');
+  useLayoutEffect(() => {
+    setTheme(document.documentElement.dataset.theme || readStored() || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+  }, []);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
