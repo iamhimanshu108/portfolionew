@@ -16,18 +16,18 @@ const stack = [
 export function About() {
   return <section id="about" className="section section-alt">
     <div className="container about-grid">
-      <div className="about-intro">
+      <div className="about-intro" data-reveal>
         <img className="about-photo" src={photo} alt="Portrait of Himanshu Yadav" width="132" height="132" loading="lazy" decoding="async" />
         <div>
           <h2>About me</h2>
           <p className="about-lede">{aboutContent.workSummary}</p>
-          <p>{aboutContent.closing} Based in {profile.location}, working with teams anywhere.</p>
+          <p>Based in {profile.location}.</p>
         </div>
       </div>
-      <div id="stack" className="stack">
+      <div id="stack" className="stack" data-reveal>
         <h3>What I work with</h3>
         <dl>
-          {stack.map(({ group, items }) => <div key={group} className="stack-row">
+          {stack.map(({ group, items }, row) => <div key={group} className="stack-row" style={{ '--row': row }}>
             <dt>{group}</dt>
             <dd><ul>{items.map(([name, Icon]) => <li key={name}><Icon aria-hidden="true" />{name}</li>)}</ul></dd>
           </div>)}

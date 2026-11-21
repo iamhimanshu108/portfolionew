@@ -1,10 +1,10 @@
 import { experience } from '../../data/experienceData.js';
 
 const process = [
-  ['Understand', 'Sit with the problem and the people who have it before picking any tools.'],
-  ['Build', 'Ship a small version that works end to end, then grow it.'],
-  ['Release', 'Put it in real hands with monitoring and a way back.'],
-  ['Improve', 'Use what people actually do to decide what changes next.'],
+  ['Understand', 'The problem before the tools.'],
+  ['Build', 'A small version that works end to end.'],
+  ['Release', 'Real users, with monitoring.'],
+  ['Improve', 'Based on what people actually do.'],
 ];
 
 export function Experience() {
@@ -14,8 +14,8 @@ export function Experience() {
         <header className="section-head section-head-stack">
           <h2>Experience</h2>
         </header>
-        <ol className="timeline">
-          {experience.map((item) => <li key={item.id} className="timeline-item">
+        <ol className="timeline" data-reveal>
+          {experience.map((item, i) => <li key={item.id} className="timeline-item" style={{ '--i': i }}>
             <time dateTime={item.start}>{item.period}</time>
             <div>
               <h3>{item.role}<span>{item.company}</span></h3>
@@ -24,7 +24,7 @@ export function Experience() {
           </li>)}
         </ol>
       </div>
-      <aside className="process" aria-labelledby="process-title">
+      <aside className="process" aria-labelledby="process-title" data-reveal>
         <h3 id="process-title">How I work</h3>
         <ol>
           {process.map(([title, text]) => <li key={title}><strong>{title}</strong><span>{text}</span></li>)}

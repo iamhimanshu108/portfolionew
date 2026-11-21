@@ -15,9 +15,9 @@ export function Contact() {
   const { copied, copy } = useCopy();
   return <section id="contact" className="section section-contact">
     <div className="container contact-grid">
-      <div className="contact-copy">
+      <div className="contact-copy" data-reveal>
         <h2>Have something to build?</h2>
-        <p>A product idea, a workflow that eats your week, or a frontend that needs untangling. Send a few lines and I’ll reply within a day.</p>
+        <p>Send a few lines. I reply within a day.</p>
         <div className="email-line">
           <a href={`mailto:${profile.email}`} onClick={() => trackEvent('Contact', { destination: 'email' })}>{profile.email}</a>
           <button type="button" className="icon-button" onClick={() => copy(profile.email)} aria-label={copied ? 'Email copied' : 'Copy email address'}>
@@ -29,7 +29,7 @@ export function Contact() {
           {links.map(([label, href]) => <li key={label}><a href={href} target="_blank" rel="noreferrer">{label}<FiArrowUpRight aria-hidden="true" /></a></li>)}
         </ul>
       </div>
-      <ContactForm />
+      <div data-reveal><ContactForm /></div>
     </div>
   </section>;
 }

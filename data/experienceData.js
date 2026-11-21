@@ -8,8 +8,8 @@ export const experience = [
     period: "Jul 2025 – Present",
     start: "2025-07",
     highlights: [
-      "Build and maintain responsive internal dashboards used by the team every day.",
-      "Automate recurring reporting workflows that were previously assembled by hand.",
+      "Build internal dashboards the team uses daily.",
+      "Automate reporting that used to be done by hand.",
     ],
   },
   {
@@ -19,8 +19,8 @@ export const experience = [
     period: "May 2025 – Jul 2025",
     start: "2025-05",
     highlights: [
-      "Shipped frontend flows across several product surfaces.",
-      "Introduced Git-based review workflows that made handoffs cleaner.",
+      "Shipped frontend flows across several products.",
+      "Set up Git-based code reviews.",
     ],
   },
 ];

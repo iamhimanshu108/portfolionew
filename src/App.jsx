@@ -9,14 +9,14 @@ import { Experience } from './sections/Experience.jsx';
 import { Contact } from './sections/Contact.jsx';
 import { useTheme } from './lib/useTheme.js';
 import { useCopy } from './lib/useCopy.js';
-import { useIsMac } from './lib/useIsMac.js';
+import { useReveal } from './lib/useReveal.js';
 
 export function App() {
   const { theme, toggle } = useTheme();
-  const isMac = useIsMac();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [toast, setToast] = useState('');
   const { copy } = useCopy();
+  useReveal();
 
   useEffect(() => {
     const onKey = (event) => {
@@ -41,6 +41,7 @@ export function App() {
 
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
+    <div className="scroll-progress" aria-hidden="true" />
     <Nav theme={theme} onToggleTheme={toggle} onOpenPalette={() => setPaletteOpen(true)} />
     <main id="main">
       <Hero />
@@ -52,7 +53,6 @@ export function App() {
     <footer className="footer">
       <div className="container footer-inner">
         <span suppressHydrationWarning>© {new Date().getFullYear()} {profile.name}</span>
-        <span>Built with React and Vite. Press <kbd>{isMac ? '⌘' : 'Ctrl'}</kbd> <kbd>K</kbd> to get around.</span>
         <a href="#top">Back to top</a>
       </div>
     </footer>
