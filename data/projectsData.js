@@ -1,54 +1,55 @@
+// `flow` describes how each project works: what goes in, what does the work, what comes out.
 export const projects = [
   {
     id: "ats-score-analyzer",
     title: "ATS Score Analyzer",
-    fileName: "Ats_score_analyzer.ts",
-    status: "Deployed",
+    kind: "AI",
+    summary: "Turns a long resume review into a clear next step.",
     description:
       "AI-powered resume evaluation that compares a candidate's resume with a job description and returns compatibility scores, missing skills, and actionable suggestions.",
-    technologies: ["React", "Generative AI", "TypeScript", "Tailwind CSS"],
+    features: ["Compares a resume to a target role", "Surfaces missing skills", "Suggests concrete edits"],
+    flow: { input: "Resume + job description", engine: "LLM scoring pipeline", output: "Score, skill gaps, next steps" },
+    technologies: ["React", "TypeScript", "Generative AI", "Tailwind CSS"],
     repoUrl: "https://github.com/iamhimanshu108/ats-score-analyzer",
     liveUrl: "https://www.iamhimanshu.in/ats-score-analyzer",
-    imageUrl:
-      "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=1200&auto=format&fit=crop",
   },
   {
     id: "automation-router",
     title: "Multi-Channel Automation Router",
-    fileName: "Automation_router.py",
-    status: "Deployed",
+    kind: "Automation",
+    summary: "One routing layer for everyday business workflows.",
     description:
-      "Trigger-based automation workflows connecting WhatsApp, Telegram, email, AppSheet, and Google Sheets with Python, FastAPI, Node.js, and Docker.",
-    technologies: ["Python", "FastAPI", "Workflow Automation", "Docker"],
+      "Trigger-based automation that connects WhatsApp, Telegram, email, AppSheet, and Google Sheets through a single Python service.",
+    features: ["Routes triggers across channels", "Connects business tools through APIs", "Runs anywhere in Docker"],
+    flow: { input: "WhatsApp, Telegram, email", engine: "FastAPI router in Docker", output: "Sheets, AppSheet, replies" },
+    technologies: ["Python", "FastAPI", "Node.js", "Docker"],
     repoUrl: "https://github.com/iamhimanshu108/automation-router",
     liveUrl: "https://www.iamhimanshu.in/automation-router",
-    imageUrl:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
   },
   {
     id: "crypto-tracker",
     title: "Crypto Tracker",
-    fileName: "Crypto_tracker.ts",
-    status: "Deployed",
+    kind: "Web app",
+    summary: "Market context that is easier to act on at a glance.",
     description:
-      "Cryptocurrency tracking interface with live market prices, trend charts, sentiment metrics, and personal watchlists using the CoinGecko API.",
+      "Live prices, trend charts, sentiment, and personal watchlists built on the CoinGecko API.",
+    features: ["Live market prices", "Trend and sentiment views", "Saved watchlists"],
+    flow: { input: "CoinGecko market data", engine: "React + TypeScript client", output: "Prices, trends, watchlists" },
     technologies: ["React", "TypeScript", "Tailwind CSS", "CoinGecko API"],
     repoUrl: "https://github.com/iamhimanshu108/crypto-tracker",
     liveUrl: "https://www.iamhimanshu.in/crypto-tracker",
-    imageUrl:
-      "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=1200&auto=format&fit=crop",
   },
   {
     id: "weather-dashboard",
     title: "Weather Dashboard",
-    fileName: "Weather_dashboard.ts",
-    status: "Deployed",
+    kind: "Web app",
+    summary: "Forecasts and alerts shaped around where you are.",
     description:
-      "Weather forecasts with alerts, historical climate context, and location-aware conditions using the OpenWeather API.",
+      "Location-aware forecasts with alerts and historical climate context using the OpenWeather API.",
+    features: ["Location-aware forecasts", "Historical context", "Severe weather alerts"],
+    flow: { input: "OpenWeather API + location", engine: "Forecast and alert logic", output: "Forecasts, history, alerts" },
     technologies: ["React", "TypeScript", "Tailwind CSS", "OpenWeather API"],
     repoUrl: "https://github.com/iamhimanshu108/weather-dashboard",
     liveUrl: "https://www.iamhimanshu.in/weather-dashboard",
-    imageUrl:
-      "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=1200&auto=format&fit=crop",
   },
 ];
